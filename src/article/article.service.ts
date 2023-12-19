@@ -13,4 +13,5 @@ export class ArticleService {
   getArticles(): Array<Article> {
     return this.articles;
   }
+
 }

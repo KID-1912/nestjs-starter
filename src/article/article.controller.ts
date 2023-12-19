@@ -1,5 +1,5 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
-import { CreateArticleDTO } from "./dto/create-article.dto";
+import { Controller, Get, Post, Body, HttpException, HttpStatus } from '@nestjs/common';
+import { CreateArticleDTO, UpdateArticleDTO } from "./dto/create-article.dto";
 import {Article} from "./interfaces/article.interface"
 import { ArticleService } from './article.service';
 
@@ -15,5 +15,10 @@ export class ArticleController {
   @Post('create')
   async createArticle(@Body() createArticleDTO: CreateArticleDTO): Promise<Article> {
     return await this.articleService.createArticle(createArticleDTO)
+  }
+
+  @Post('update/:id')
+  updateArticle(@Body() updateArticleDTO: UpdateArticleDTO) {
+    throw new HttpException('Forbidden', HttpStatus.FORBIDDEN)
   }
 }
