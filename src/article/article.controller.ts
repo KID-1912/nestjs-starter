@@ -1,9 +1,11 @@
-import { Controller, Get, Post, Body, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, HttpException, ForbiddenException,  HttpStatus, UseFilters } from '@nestjs/common';
 import { CreateArticleDTO, UpdateArticleDTO } from "./dto/create-article.dto";
+import { HttpExceptionFilter } from '../filters/exception.filter';
 import {Article} from "./interfaces/article.interface"
 import { ArticleService } from './article.service';
 
 @Controller('article')
+@UseFilters(new HttpExceptionFilter())
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
@@ -20,5 +22,10 @@ export class ArticleController {
   @Post('update/:id')
   updateArticle(@Body() updateArticleDTO: UpdateArticleDTO) {
     throw new HttpException('Forbidden', HttpStatus.FORBIDDEN)
+  }
+
+  @Post('delete/:id')
+  deleteArticle(@Body() updateArticleDTO: UpdateArticleDTO) {
+    throw new ForbiddenException()
   }
 }
