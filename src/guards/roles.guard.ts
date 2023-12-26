@@ -12,7 +12,7 @@ export class RolesGuard implements CanActivate {
     if(!roles) return true; // 未注释有效Roles，即无角色条件
     const request = context.switchToHttp().getRequest();
     const user = request.user;  // 取出用户
-    throw new UnauthorizedException()
-    // return true;
+    // throw new UnauthorizedException()
+    return true;
   }
 }

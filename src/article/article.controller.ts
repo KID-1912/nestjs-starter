@@ -2,33 +2,35 @@ import {
   Controller, 
   Get,
   Post, 
-  Param,
   Body,
   ForbiddenException,
   UseFilters,
   UseGuards,
-  UsePipes
+  UsePipes,
+  UseInterceptors
 } from '@nestjs/common';
-import { CreateArticleDTO } from "./dto/create-article.dto";
-import { ZodValidationPipe } from "../pipes/zodValidation.pipe";
 import { updateArticleSchema, UpdateArticleDTO } from "./dto/update-article.dto";
-import { HttpExceptionFilter } from '../filters/exception.filter';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { RolesGuard } from 'src/guards/roles.guard'
 import { Roles } from "src/decorators/roles.decorator"
+import { LoggingInterceptor } from 'src/interceptors/logging.interceptor';
+import { CreateArticleDTO } from "./dto/create-article.dto";
+import { ZodValidationPipe } from "../pipes/zodValidation.pipe";
+import { HttpExceptionFilter } from '../filters/exception.filter';
 import {Article} from "./interfaces/article.interface"
 import { ArticleService } from './article.service';
 
 @Controller('article')
-@UseFilters(new HttpExceptionFilter())
 @UseGuards(AuthGuard)
 @UseGuards(RolesGuard)
+@UseInterceptors(LoggingInterceptor)
+@UseFilters(new HttpExceptionFilter())
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
   @Roles(['admin'])
   @Get('all')
-  async getArticles(): Promise<Array<Article>> {
+  async getArticles(): Promise<Article[]> {
     return await this.articleService.getArticles();
   }
 
@@ -37,13 +39,13 @@ export class ArticleController {
     return await this.articleService.createArticle(createArticleDTO)
   }
 
-@Post('update')
-@UsePipes(new ZodValidationPipe(updateArticleSchema))
-updateArticle(
-  @Body() updateArticleDTO: UpdateArticleDTO
-) {
-  return updateArticleDTO;
-}
+  @Post('update')
+  @UsePipes(new ZodValidationPipe(updateArticleSchema))
+  updateArticle(
+    @Body() updateArticleDTO: UpdateArticleDTO
+  ) {
+    return updateArticleDTO;
+  }
 
   @Post('delete/:id')
   deleteArticle(@Body() updateArticleDTO: UpdateArticleDTO) {
